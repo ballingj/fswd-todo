@@ -1,0 +1,88 @@
+(venv) jeff@Jeff-Ryzen7:~/fswd_dev/demo_files$ python
+Python 3.10.6 (main, Aug 10 2022, 11:40:04) [GCC 11.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ad_inserting_records
+>>> from ad_inserting_records import Person
+>>> from ad_inserting_records import app
+>>> with app.app_context():
+...     Person.query.all()
+...
+[<Person 1>, <Person 2>, <Person 3>]
+>>> 
+>>> with app.app_context():
+...     Person.query.first()
+...
+<Person 1>
+>>> with app.app_context():
+...     query = Person.query.filter(Person.name == 'Amy')
+...
+>>> with app.app_context():
+...     query = Person.query.filter(Person.name == 'Amy')
+...     query.first()
+...     query.all()
+...
+<Person 1>
+[<Person 1>]
+
+##################################
+added __repr__
+3####################################
+(venv) jeff@Jeff-Ryzen7:~/fswd_dev/demo_files$ python
+Python 3.10.6 (main, Aug 10 2022, 11:40:04) [GCC 11.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ad_inserting_records
+>>> from ad_inserting_records import Person
+>>> from ad_inserting_records import app
+>>> with app.app_context():
+...     Person.query.all()
+...
+[<Person ID: 1. name: Amy>, <Person ID: 2. name: Samuel>, <Person ID: 3. name: Wolfgang>]
+>>>
+>>>
+>>> with app.app_context():
+...     Person.query.first()
+...
+<Person ID: 1. name: Amy>
+>>>
+>>> with app.app_context():
+...     Person.query.last()
+...
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+AttributeError: 'Query' object has no attribute 'last'
+>>> person = Person(name='Jeff')
+>>> db.session.add(person)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'db' is not defined
+
+>>> from ad_inserting_records import db, Person
+>>> person = Person(name='Jeff')
+>>> db.session.add(person)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<string>", line 2, in add
+  File "/home/jeff/fswd_dev/venv/lib/python3.10/site-packages/sqlalchemy/orm/scoping.py", line 24, in _proxied
+    return self.registry()
+  File "/home/jeff/fswd_dev/venv/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1006, in __call__
+    key = self.scopefunc()
+  File "/home/jeff/fswd_dev/venv/lib/python3.10/site-packages/flask_sqlalchemy/session.py", line 81, in _app_ctx_id
+    return id(app_ctx._get_current_object())  # type: ignore[attr-defined]
+  File "/home/jeff/fswd_dev/venv/lib/python3.10/site-packages/werkzeug/local.py", line 513, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+>>>
+>>> person = Person(name='Jeff')
+>>> with app.app_context():
+...     db.session.add(person)
+...
+...
+>>> with app.app_context():
+...     db.session.add(person)
+...     db.session.commit()
+...
+>>>
