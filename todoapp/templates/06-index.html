@@ -13,23 +13,11 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            width: 300px;
-        }
-        li {
-            clear: both;
-        }
-        li button {            
-            appearance: none;
-            border: none;
-            outline: none;
-            color: red;
-            float: right; 
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <!-- Deleting a Todo Item -->
+    <!-- Updating a Todo Item -->
     <form id="form">
         <input type="text" id="description" name="description" placeholder="Enter Description">
         <input type="submit" value="Create">
@@ -37,36 +25,17 @@
     <div id="error" class="hidden">Something went Wrong!</div>
     <ul id="todos">
         {% for d in data %}
-        <li>            
-            <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}/>{{ d.description }}
-            <button class="delete-me" data-id="{{ d.id }}" type="submit">&cross;</button>
-        </li>
+        <li><input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}/>{{ d.description }}</li>
         {% endfor %}
     </ul>
 
     <script>
-        const delete_todos = document.querySelectorAll('.delete-me');
-        // console.log(delete_todos);
-        for (let i = 0; i < delete_todos.length; i++) {
-            const delete_todo = delete_todos[i];
-            // console.log(delete_todo)
-            delete_todo.onclick = function(e) {
-                const todoId = e.target.dataset['id'];
-                console.log(todoId)
-                fetch('/todos/delete/' + todoId, {
-                    method: 'DELETE'
-                })
-            }
-        }
-
-
         const checkboxes = document.querySelectorAll('.check-completed');
         for (let i = 0; i < checkboxes.length; i++) {
             const checkbox = checkboxes[i];
             checkbox.onchange = function(e) {
                 const newCompleted = e.target.checked;
                 const todoId = e.target.dataset['id'];
-                console.log(todoId)
                 fetch('/todos/' + todoId + '/set-completed', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -84,7 +53,6 @@
                 })
             }
         }
-
         document.getElementById('form').onsubmit = function(e) {
             e.preventDefault();  //the default is whole page refresh
             fetch('/todos/create', {

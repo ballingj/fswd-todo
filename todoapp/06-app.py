@@ -1,5 +1,5 @@
 """
-Deleting a Todo Item
+Updating a Todo Item
 """
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -38,7 +38,7 @@ class Todo(db.Model):
 @app.route('/')
 def index():
     return render_template('index.html', data=Todo.query.order_by('id').all())
- 
+
 
 #route to create an item
 @app.route('/todos/create', methods=['POST'])
@@ -81,18 +81,7 @@ def set_completed_todo(todo_id):
 
 
 # route to delete an item
-@app.route('/todos/delete/<todo_id>', methods=['DELETE'])
-def delete_todo(todo_id):
-    try:
-        todo = Todo.query.get(todo_id)
-        db.session.delete(todo)
-        db.session.commit()
-    except:
-        db.session.rollback()
-    finally:
-        db.session.close()
-    # return redirect(url_for('index'))
-    return jsonify({ 'success': True })
+
 
 
 if __name__ == '__main__':
