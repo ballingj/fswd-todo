@@ -45,6 +45,7 @@
     </ul>
 
     <script>
+        // Code to delete a todo item from the record
         const delete_todos = document.querySelectorAll('.delete-me');
         // console.log(delete_todos);
         for (let i = 0; i < delete_todos.length; i++) {
@@ -56,10 +57,25 @@
                 fetch('/todos/delete/' + todoId, {
                     method: 'DELETE'
                 })
+                // function to remove the todo record from the view without page refresh
+                .then(function() {
+                    // gets the delete button element by using the data-id attribute
+                    const buttonHTML = document.querySelector('.delete-me[data-id="' + todoId + '"]');
+                    // gets the parent li element of that button element and deletes it
+                    // means that all the other elements inside are also removed! :)
+                    buttonHTML.parentElement.remove();
+                })
+                .then(function() {
+                    document.getElementById('error').className = 'hidden';
+                })
+                .catch(function() {
+                    console.log("Error: " + error);
+                    document.getElementById('error').className = '';
+                })
             }
         }
 
-
+        // Code to add/remove checkbox to completed todo item and update the record
         const checkboxes = document.querySelectorAll('.check-completed');
         for (let i = 0; i < checkboxes.length; i++) {
             const checkbox = checkboxes[i];
@@ -79,12 +95,14 @@
                 .then(function() {
                     document.getElementById('error').className = 'hidden';
                 })
-                .catch(function () {
+                .catch(function() {
                     document.getElementById('error').className = '';
                 })
             }
         }
 
+
+        // code to add a todo item to the list
         document.getElementById('form').onsubmit = function(e) {
             e.preventDefault();  //the default is whole page refresh
             fetch('/todos/create', {
@@ -105,6 +123,26 @@
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem);
                 document.getElementById('error').className = 'hidden';
+                // ########## Code to add checkbox to the newly created todo without refresh ########## //
+                // create an inout element
+                const inputItem = document.createElement('input');
+                // add a class name
+                inputItem.className = "check-completed";
+                // set the data-id attribute using the 'id' in jsonResponse (this was given back to us from the create route handler)
+                inputItem.setAttribute('data-id', jsonResponse['id']);
+                // define its type
+                inputItem.type = "checkbox";
+                // insert the checkbox as the first child item of liItem
+                liItem.prepend(inputItem);
+                const buttonItem = document.createElement('button');
+                buttonItem.className = "delete-record";
+                buttonItem.setAttribute('data-id', jsonResponse['id']);
+                buttonItem.innerHTML = "&cross;";
+                liItem.appendChild(buttonItem);
+            })
+            // clear the description field of any text content left by the input
+            .then(function () {
+                document.getElementById('description').value = '';
             })
             .catch(function() {
                 document.getElementById('error').className = '';
