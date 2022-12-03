@@ -1,5 +1,5 @@
 
-##How to start and stop PostgreSQL server?
+## How to start and stop PostgreSQL server?
 
 In this post, we are going to figure out how to start, stop, and restart a PostgreSQL server on macOS, Linux, and Windows.
 
