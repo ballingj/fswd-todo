@@ -1,5 +1,5 @@
 """
-Deleting a Todo Item
+Database Relationship: One-to-Many
 """
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -7,6 +7,7 @@ from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 import sys
 from flask_migrate import Migrate
+
 
 app = Flask(__name__)
 
@@ -19,20 +20,26 @@ db = SQLAlchemy(app)
 # define db migration
 migrate = Migrate(app, db)
 
-
+# child table of TodoList = contains the db.ForeignKey
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<todo {self.id} {self.description}>'
+        return f'<Todo {self.id!r} {self.description!r}, list {self.list_id!r}>'
 
+# Parent table to Todo = contains the db.relationship and backref 
+class TodoList(db.Model):
+    __tablename__ = 'todolists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    todos = db.relationship('Todo', backref='list', lazy=True)
 
-# we disable this after migrations are incorporated
-# with app.app_context():
-#     db.create_all()
+    def _repr__(self):
+        return f'<TodoList {self.id!r} {self.name!r}>'
 
 
 @app.route('/')
@@ -53,6 +60,8 @@ def create_todo():
         db.session.add(todo)  # add to table
         db.session.commit()   # write to db
         body['description'] = todo.description
+        body['id'] = todo.id
+        body['completed'] = todo.completed
     except:
         error = True
         db.session.rollback()
@@ -85,8 +94,7 @@ def set_completed_todo(todo_id):
 def delete_todo(todo_id):
     try:
         todo = Todo.query.get(todo_id)
-        db.session.delete(todo)
-        # or all at once replacing the above two lines
+        db.session.delete(todo)  # or
         # Todo.query.filter_by(id=todo_id).delete()
         db.session.commit()
     except:
