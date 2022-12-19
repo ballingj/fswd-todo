@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 300px;
+        }
+        li {
+            clear: both;
+        }
+        li button {            
+            appearance: none;
+            border: none;
+            outline: none;
+            color: red;
+            float: right; 
+            cursor: pointer;
+        }
+        .lists-wrapper, .todos-wrapper {
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <!-- CRUD on a list of todos -->
+    <div class="lists-wrapper">
+        <h4>TODO LISTS</h4>
+        <form action="/lists/create" method="POST" id="list-form">
+            <label for="todolist">Create List:</label>
+            <input type="text" name="todolist" id="todolist-input" placeholder="A new List" data-id="{{ active_list.id }}"/> <!--what is this???-->
+            <input type="submit" value="Create List">
+        </form>
+        <ul id="lists">
+            {% for list in lists %}
+            <li>
+                <input type="checkbox" class="list-check-completed" data-id="{{ list.id }}">
+                <a href='/lists/{{ list.id }}'>{{ list.name }}</a>
+                <button class="delete-list" data-id="{{ list.id }}" type="submit">&cross;</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="todos-wrapper">
+        <h4>{{  active_list.name }}</h4>
+        <form action="/todos/create" method="POST" id="todo-form">
+            <input id="list_id" type="hidden" value="{{ active_list.id }}">
+            <label for="description">Create Task:</label>
+            <input type="text" id="description" name="description" placeholder="Enter Description">
+            <input type="submit" value="Create">
+        </form>
+        <div id="error" class="hidden">Something went Wrong!</div>
+        <ul id="todos">
+            {% for todo in todos %}
+            <li>
+                <input type="checkbox" class="check-completed" data-id="{{ todo.id }}" {% if todo.completed %} checked {% endif
+                    %} />{{ todo.description }}
+                <button class="delete-todo" data-id="{{ todo.id }}" type="submit">&cross;</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+
+    <script>
+
+        // Code to activate checkboxes in TodoList
+        const listCheckboxes = document.querySelectorAll('.list-check-completed');
+        for (let i = 0; i < listCheckboxes.length; i++) {
+            const checkbox = listCheckboxes[i];
+
+            checkbox.onchange = function (e) {
+                if (e.target.checked) {
+                    const listId = e.target.dataset.id;
+
+                    fetch('/lists/' + listId + '/set-completed', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(function (jsonResponse) {
+                        document.getElementById('error').className = 'hidden';
+
+                        const todoCheckboxes = document.querySelectorAll('.todo-check-completed');
+
+                        for (let i = 0; i < todoCheckboxes.length; i++) {
+                            const checkbox = todoCheckboxes[i];
+
+                            checkbox.checked = true;
+                        }
+                    })
+                    .catch(function () {
+                        document.getElementById('error').className = '';
+                    })
+                }
+            }
+        }
+
+         // Code to add/remove checkbox to completed todo item and update the record
+        const checkboxes = document.querySelectorAll('.check-completed');
+        for (let i = 0; i < checkboxes.length; i++) {
+            const checkbox = checkboxes[i];
+
+            checkbox.onchange = function (e) {
+                const newCompleted = e.target.checked;
+                const todoId = e.target.dataset['id'];
+                console.log(todoId)
+
+                fetch('/todos/' + todoId + '/set-completed', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'completed': newCompleted
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(function () {
+                        document.getElementById('error').className = 'hidden';
+                    })
+                    .catch(function () {
+                        document.getElementById('error').className = '';
+                    })
+            }
+        }
+        
+
+        // Code to delete List
+        deleteListBtns = document.querySelectorAll(".delete-list");
+
+        for (let i = 0; i < deleteListBtns.length; i++) {
+            const deleteBtn = deleteListBtns[i];
+            deleteBtn.onclick = function (e) {
+                console.log("Delete event: ", e);
+                const listId = e.target.dataset.id;
+
+                fetch('/lists/' + listId + '/delete', {
+                    method: 'DELETE'
+                }).then(function () {
+                    console.log('Parent?', e.target);
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById("error").className = "hidden";
+                    window.location.reload(true);
+                })
+                .catch(function (e) {
+                    console.error(e);
+                    document.getElementById("error").className = "";
+                });
+            };
+        }
+
+
+        // Code to delete a todo item from the record
+        const delete_todos = document.querySelectorAll('.delete-todo');
+        // console.log(delete_todos);
+        for (let i = 0; i < delete_todos.length; i++) {
+            const delete_todo = delete_todos[i];
+            // console.log(delete_todo)
+            delete_todo.onclick = function(e) {
+                const todoId = e.target.dataset['id'];
+                console.log(todoId)
+                fetch('/todos/delete/' + todoId, {
+                    method: 'DELETE'
+                })
+                // function to remove the todo record from the view without page refresh
+                .then(function() {
+                    console.log('Parent?', e.target);
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById("error").className = "hidden";
+                    //window.location.reload(true);
+                })
+                .then(function() {
+                    document.getElementById('error').className = 'hidden';
+                })
+                .catch(function() {
+                    console.log("Error: " + error);
+                    document.getElementById('error').className = '';
+                })
+            }
+        }
+
+       
+        // code to add a todo item 
+        document.getElementById('todo-form').onsubmit = function(e) {
+            e.preventDefault();  //the default is whole page refresh
+            fetch('/todos/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'description': document.getElementById('description').value,
+                    'list_id': document.getElementById('list_id').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                // console.log(jsonResponse);
+                const liItem = document.createElement('LI');
+                liItem.innerHTML = jsonResponse['description'];
+                document.getElementById('todos').appendChild(liItem);
+                document.getElementById('error').className = 'hidden';
+                // window.location.reload(true);
+
+                // ########## Code to add checkbox to the newly created todo without refresh ########## //
+                // create an inout element
+                const inputItem = document.createElement('input');
+                inputItem.className = "check-completed";
+                // set the data-id attribute using the 'id' in jsonResponse (this was given back to us from the create route handler)
+                inputItem.setAttribute('data-id', jsonResponse['id']);
+                // define its type
+                inputItem.type = "checkbox";
+                // insert the checkbox as the first child item of liItem
+                liItem.prepend(inputItem);
+                const buttonItem = document.createElement('button');
+                buttonItem.className = "delete-record";
+                buttonItem.setAttribute('data-id', jsonResponse['id']);
+                buttonItem.innerHTML = "&cross;";
+                liItem.appendChild(buttonItem);
+                // add a class name
+            })
+            // clear the description field of any text content left by the input
+            .then(function () {
+                 document.getElementById('description').value = '';
+            })
+            .catch(function() {
+                document.getElementById('error').className = '';
+            })
+        }
+
+        // code to add a new todolist item
+        document.getElementById('list-form').onsubmit = function (e) {
+                e.preventDefault();
+
+                fetch('/lists/create', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'name': document.getElementById('todolist-input').value
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (jsonResponse) {
+                        const liItem = document.createElement('LI');
+
+                        liItem.innerHTML = jsonResponse['name'];
+                        document.getElementById('lists').appendChild(liItem);
+                        document.getElementById('error').className = 'hidden';
+                        window.location.reload(true);
+                    })
+                    .catch(function (err) {
+                        document.getElementById('error').className = '';
+                    })
+            }
+
+    </script>
+    
+</body>
+</html>
