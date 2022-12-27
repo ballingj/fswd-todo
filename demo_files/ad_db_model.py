@@ -12,10 +12,14 @@ db = SQLAlchemy(app)
 
 # SQLAlchemy's way of initializing instance of a table
 
+
 class Person(db.Model):
     __tablename__ = 'persons'   # by default lowercase name of class
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+
+    def __repr__(self):
+        return f"<Person: {self.name!r}>"
 
 
 # actually creates that tables based on the db.Model that was configured
@@ -30,4 +34,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.debug = True
+    app.run(host="0.0.0.0", port=5001)

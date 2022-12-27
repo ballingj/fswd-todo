@@ -39,6 +39,30 @@ class Person(db.Model):
 with app.app_context():
     db.create_all()
 
+# Create a person to be added later
+john = Person(name="John Cenna")
+amy = Person(name="Amy")
+sam = Person(name="Sam")
+peter = Person(name="Peter")
+
+with app.app_context():
+    # insert
+    db.session.add(john)
+    db.session.add(amy)
+    db.session.add(sam)
+    db.session.add(peter)
+    db.session.commit()
+    # new Select language
+    # people = db.session.execute(db.select(Person))
+    # print(people.all())
+    # old query
+    people = db.session.query(Person).all()
+
+    for person in people:
+        print(person.name)
+
+    print(people)
+
 
 # querying contents of the database
 @app.route('/')
@@ -50,4 +74,4 @@ def index():
 if __name__ == '__main__':
     # set the debug mode to on
     app.debug = True
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5001)
