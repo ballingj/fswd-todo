@@ -12,8 +12,8 @@
     </style>
 </head>
 <body>
-    <!-- Using AJAX to send data to Flask -->
-    <form id="form">
+    <!-- Using AJAX to send data to Controller and manipulate View-->
+    <form id="form">  <!-- he we no longer need the method="" and action="" attributes" because we are using js fetch-->
         <input type="text" id="description" name="description" placeholder="Enter Description">
         <input type="submit" value="Create">
     </form>
@@ -38,13 +38,14 @@
             })
             .then(function(response) {
                 return response.json();
-            })
+            }) // Manipulate the View
             .then(function(jsonResponse) {
                 console.log(jsonResponse);
                 const liItem = document.createElement('LI');
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem);
-                document.getElementById('error').className = 'hidden';
+                document.getElementById('description').value = '';  // blank form input field
+                document.getElementById('error').className = 'hidden';  // no errors
             })
             .catch(function() {
                 document.getElementById('error').className = '';

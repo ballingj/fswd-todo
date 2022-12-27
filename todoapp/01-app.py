@@ -1,5 +1,6 @@
 """
-This file is before the implementation of forms 
+This file is demonstrating the 'R' in CRUD
+Reading ToDo items
 Exercise: getting user data in Flask ToDo App
 """
 
