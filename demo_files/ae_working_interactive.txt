@@ -66,13 +66,17 @@ This typically means that you attempted to use functionality that needed
 the current application. To solve this, set up an application context
 with app.app_context(). See the documentation for more information.
 >>>
->>> # Adding
+#####################
+###### Adding
+######################
 >>> with app.app_context():
 ...     person = Person(name='Jeff')
 ...     db.session.add(person)
 ...     db.session.commit()
 ...
->>> # Deleting
+#########################
+###### Deleting
+##########################
 >>> with app.app_context():
 ...     del_johns = db.session.query(Person).filter_by(name="John Cenna").all()
 ...     for j in del_johns:
@@ -85,3 +89,10 @@ with app.app_context(). See the documentation for more information.
 ...     db.session.commit()
 ... 
 >>>
+##############################
+###  Update
+##############################
+>>> with app.app_context():
+...     upd_john = db.session.query(Person).filter_by(name="John Cenna").one()
+        upd_john.name = "John 'warrior' Cenna"
+...     db.session.commit()
