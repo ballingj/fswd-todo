@@ -214,7 +214,8 @@
 
                     liItem.innerHTML = jsonResponse['description'];
                     document.getElementById('todos').appendChild(liItem);
-                    document.getElementById('error').className = 'hidden';
+                    document.getElementById('description').value = '';  // blank form input field
+                    document.getElementById('error').className = 'hidden';  // no errors
                     window.location.reload(true);
                 })
                 .catch(function () {
@@ -242,7 +243,8 @@
 
                     liItem.innerHTML = jsonResponse['name'];
                     document.getElementById('lists').appendChild(liItem);
-                    document.getElementById('error').className = 'hidden';
+                    document.getElementById('todolist-input').value = '';  // blank form input field
+                    document.getElementById('error').className = 'hidden';  // no errors
                     window.location.reload(true);
                 })
                 .catch(function (err) {

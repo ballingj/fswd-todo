@@ -72,7 +72,8 @@
                 const liItem = document.createElement('LI');
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem);
-                document.getElementById('error').className = 'hidden';
+                document.getElementById('description').value = '';  // blank form input field
+                document.getElementById('error').className = 'hidden';  // no errors;
             })
             .catch(function() {
                 document.getElementById('error').className = '';
