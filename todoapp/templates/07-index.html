@@ -102,7 +102,7 @@
         }
 
 
-        // code to add a todo item to the list
+        // code to create a todo item and add to the list
         document.getElementById('form').onsubmit = function(e) {
             e.preventDefault();  //the default is whole page refresh
             fetch('/todos/create', {

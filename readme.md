@@ -59,11 +59,13 @@ python app.py
 import flask_migrate import migrate
 
 ```
+
 - Add flask migrate; right below db = SQLAlchemy()
 ```
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 ```
+
 - initialize migrations at the terminal
 ```
 flask db init
@@ -72,12 +74,13 @@ flask db migrate
 ```
 
 - now run the migrations
+
 - 'upgrade' to execute the migrations script
 ```
 flask db upgrade
 ```
+
 or 'downgrade' to rollback the migrations script
 ```
 flask db downgrade
 ```
-

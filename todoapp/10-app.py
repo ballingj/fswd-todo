@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-# Parent table to Todo = contains the db.relationship and backref 
+# Parent table to Todo = contains the db.relationship and backref
 class TodoList(db.Model):
     __tablename__ = 'todolists'
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +38,8 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
-    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey(
+        'todolists.id'), nullable=False)
 
     def __repr__(self):
         return f'<Todo {self.id!r} {self.description!r}, list {self.list_id!r}>'
@@ -51,10 +52,10 @@ def index():
 
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
-    lists=TodoList.query.all()
-    active_list=TodoList.query.get(list_id)
-    todos=Todo.query.filter_by(list_id=list_id).order_by('id').all()
-    return render_template('index.html', todos=todos, lists=lists, active_list=active_list)
+    lists = TodoList.query.all()
+    active_list = TodoList.query.get(list_id)
+    todos = Todo.query.filter_by(list_id=list_id).order_by('id').all()
+    return render_template('10-index.html', todos=todos, lists=lists, active_list=active_list)
 
 
 @app.route('/lists/create', methods=['POST'])
@@ -125,8 +126,7 @@ def set_completed_list(list_id):
         return '', 200
 
 
-
-#route to create a todo item
+# route to create a todo item
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
     error = False
@@ -135,7 +135,8 @@ def create_todo():
         # get the value from the request body
         description = request.get_json()['description']
         list_id = request.get_json()['list_id']
-        todo = Todo(description=description, completed = False, list_id=list_id)  # create an instance Todo class
+        todo = Todo(description=description, completed=False,
+                    list_id=list_id)  # create an instance Todo class
         # todo = Todo(description=description)  # create an instance Todo class
         # insert statement
         db.session.add(todo)  # add to table
@@ -179,6 +180,7 @@ def set_completed_todo(todo_id):
 # route to delete an item
 @app.route('/todos/delete/<todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
+    error = False
     try:
         todo = Todo.query.get(todo_id)
         db.session.delete(todo)  # or
@@ -193,8 +195,7 @@ def delete_todo(todo_id):
         abort(500)
     else:
         # return redirect(url_for('index'))
-        return jsonify({ 'success': True })
-
+        return jsonify({'success': True})
 
 
 if __name__ == '__main__':

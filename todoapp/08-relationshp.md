@@ -22,7 +22,9 @@ SQLAlchemy configures the settings between model relationships once and generate
 db.relationship is an interface offered in SQLAlchemy to provide and configure a mapped relationship between two models.
 db.relationship is defined on the parent model, and it sets:
     the name of its children (e.g. children), for example parent1.children
-    the name of a parent on a child using the backref, for example child1.my_amazing_parent 
+    the name of a parent on a child using the backref, for example:
+      child1 = SomeChild(name='Andrew')
+      child1.some_parent   // name of the backref -- returns the parent object that chil1 belongs to 
 
 
 

@@ -235,10 +235,6 @@
                 liItem.appendChild(buttonItem);
                 // add a class name
             })
-            // clear the description field of any text content left by the input
-            .then(function () {
-                 document.getElementById('description').value = '';
-            })
             .catch(function() {
                 document.getElementById('error').className = '';
             })
@@ -262,7 +258,6 @@
                     })
                     .then(function (jsonResponse) {
                         const liItem = document.createElement('LI');
-
                         liItem.innerHTML = jsonResponse['name'];
                         document.getElementById('lists').appendChild(liItem);
                         document.getElementById('todolist-input').value = '';  // blank form input field
