@@ -47,11 +47,6 @@ pg_ctl -D "C:\Program Files\PostgreSQL\9.6\data" restart
 
 ### On Linux
 
-By default, the postgres user has no password and can hence only connect if ran by the postgres system user. The following command will assign it:
-
-sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
-sudo -u postgres psql -c "CREATE DATABASE testdb;"
-
 #### Start the PostgreSQL server
 ```
 sudo service postgresql start
@@ -60,4 +55,11 @@ sudo service postgresql start
 ```
 sudo service postgresql stop
 ```
+
+#### user
+By default, the postgres user has no password and can hence only connect if ran by the postgres system user. The following command will assign it:
+
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE DATABASE testdb;"
+
 
