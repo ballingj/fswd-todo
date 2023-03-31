@@ -62,8 +62,8 @@ def create_app(test_config=None):
     
     @app.route('/plants', methods=['GET'])
     def get_plants():
-        #paginations
         selection = Plant.query.order_by(Plant.id).all()
+        # paginations
         current_plants = paginate_plants(request, selection)
         if len(current_plants) == 0:
             abort(404)

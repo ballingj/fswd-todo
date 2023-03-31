@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy  # , or_
+from flask_sqlalchemy import SQLAlchemy  
 from flask_cors import CORS
 import random
 
@@ -8,7 +8,7 @@ from models import setup_db, Book
 
 BOOKS_PER_SHELF = 8
 
-# @TODO: General Instructions
+# @DONE: General Instructions
 #   - As you're creating endpoints, define them and then search for 'TODO' within the frontend to update the endpoints there.
 #     If you do not update the endpoints, the lab will not work - of no fault of your API code!
 #   - Make sure for each route that you're thinking through when to abort and with which kind of error
@@ -53,8 +53,8 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-             'books': current_books,
-             'total_books': len(selection)
+            'books': current_books,
+            'total_books': len(Book.query.all())
         })
 
 
@@ -117,7 +117,8 @@ def create_app(test_config=None):
 
         try:
             if search:
-                selection = Book.query.order_by(Book.id).filter(Book.title.ilike('%{}%'.format(search)))
+                # not sure why this is here / nothing to do with creating a book but part of TDD lesson
+                selection = Book.query.order_by(Book.id).filter(Book.title.ilike("%{}%".format(search)))
                 current_books = paginate_books(request, selection)
 
                 return jsonify({
@@ -126,6 +127,7 @@ def create_app(test_config=None):
                     'total_books': len(selection.all())
                 })
             else:
+                # this is the code to add a book
                 book = Book(title=new_title, author=new_author, rating=new_rating)
                 book.insert()
                 
@@ -136,11 +138,12 @@ def create_app(test_config=None):
                     'success': True,
                     'created': book.id,
                     'books': current_books,
-                    'total_books': len(selection)
+                    'total_books': len(Book.query.all())
                 })
         except:
             abort(422)
 
+    # Start of Error Handlers
 
     @app.errorhandler(404)
     def not_found(error):
