@@ -54,7 +54,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'books': current_books,
-            'total_books': len(Book.query.all())
+            'total_books': len(selection)
         })
 
 
@@ -98,7 +98,7 @@ def create_app(test_config=None):
                 'success': True,
                 'deleted': book_id,
                 'books': current_books,
-                'total_books': len(Book.query.all())
+                'total_books': len(selection)
             })
 
         except:
@@ -118,13 +118,13 @@ def create_app(test_config=None):
         try:
             if search:
                 # not sure why this is here / nothing to do with creating a book but part of TDD lesson
-                selection = Book.query.order_by(Book.id).filter(Book.title.ilike("%{}%".format(search)))
+                selection = Book.query.order_by(Book.id).filter(Book.title.ilike("%{}%".format(search))).all
                 current_books = paginate_books(request, selection)
 
                 return jsonify({
                     'success': True,
                     'books': current_books,
-                    'total_books': len(selection.all())
+                    'total_books': len(selection)
                 })
             else:
                 # this is the code to add a book
@@ -138,7 +138,7 @@ def create_app(test_config=None):
                     'success': True,
                     'created': book.id,
                     'books': current_books,
-                    'total_books': len(Book.query.all())
+                    'total_books': len(selection)
                 })
         except:
             abort(422)
